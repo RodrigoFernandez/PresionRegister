@@ -1,10 +1,10 @@
 # Principal
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from src.presionregister.models import RegistroPresion, RespuestaRegistro
-from src.config import settings
-from src.logger import log
-from src.spreadsheet import iniciar_cliente_google_sheets
+from src.presionregister.config import settings
+from src.presionregister.logger import log
+from src.presionregister.spreadsheet import iniciar_cliente_google_sheets
 
 
 app = FastAPI(
@@ -22,7 +22,7 @@ async def root():
 
 @app.post("/registro", response_model=RespuestaRegistro)
 async def registro(registro: RegistroPresion):
-    print(registro)
+    
 
     if not gs_client:
         log.error("Error al inicializar el cliente de google sheets")
@@ -30,6 +30,7 @@ async def registro(registro: RegistroPresion):
         raise HTTPException(status_code=500, detail="Error al inicializar el cliente de google sheets")
 
     try:
+        print(registro)
         await gs_client.agregar_registro(registro)
         log.info(f"Registro exitoso: {registro}")
         return RespuestaRegistro(status="success", mensaje="Registro exitoso")

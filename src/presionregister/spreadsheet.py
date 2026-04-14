@@ -1,19 +1,22 @@
 # Lógica de gspread
-import gspread
-
-from google.oauth2.service_account import Credentials
-from src.models import PresionRegister
-from src.logger import log
+from .models import PresionRegister
+from .logger import log
+import httpx
+from datetime import datetime
 
 class GoogleSheetManager:
     def __init__(self, web_app_url: str):
         self.url = web_app_url
 
     async def agregar_registro(self, datos: PresionRegister):
+
+        ahora = datetime.now()
+
+
         # Preparamos el payload con el formato exacto de las columnas
         payload = {
-            "fecha": datos.fecha,
-            "hora": datos.hora,
+            "fecha": f"{ahora.date()}",
+            "hora": ahora.strftime("%H:%M"),
             "sistolica": datos.sistolica,
             "diastolica": datos.diastolica,
             "pulso": datos.pulso
